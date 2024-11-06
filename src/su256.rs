@@ -27,3 +27,30 @@ impl ToString for SU256 {
         hex::encode(bytes)
     }
 }
+
+impl SU256 {
+    pub fn add_mod(&self, b: &Self, p: &Self) -> Self {
+        let x1 = self.v.checked_rem(p.v).expect("modulo");
+        let x2 = b.v.checked_rem(p.v).expect("modulo");
+
+        let (mut x3, over) = x1.overflowing_add(x2);
+
+        if over {
+            x3 = x3
+                .checked_add(
+                    U256::MAX
+                        .checked_sub(p.v)
+                        .expect("sub")
+                        .checked_add(U256::from_big_endian(&[1]))
+                        .expect("conversion"),
+                )
+                .expect("add");
+        }
+        x3 = x3.checked_rem(p.v).expect("modulo");
+        Self { v: x3 }
+    }
+    pub fn sub_mod(&self, b: &self, p: &self) -> Self {}
+    pub fn mul_mod(&self, b: &self, p: &self) -> Self {}
+    pub fn div_mod(&self, b: &self, p: &self) -> Self {}
+    pub fn exp_mod(&self, b: &self, p: &self) -> Self {}
+}
