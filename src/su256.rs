@@ -20,3 +20,10 @@ impl FromStr for SU256 {
         }
     }
 }
+
+impl ToString for SU256 {
+    fn to_string(&self) -> String {
+        let bytes = self.v.to_big_endian();
+        hex::encode(bytes)
+    }
+}
